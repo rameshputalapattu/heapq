@@ -5,21 +5,21 @@ import (
 	"testing"
 )
 
-func verify(t *testing.T, i int, pq *PQ[int]) {
+func verify[T any](t *testing.T, i int, pq *PQ[T]) {
 	t.Helper()
 	n := pq.Len()
 	j1 := 2*i + 1
 	j2 := 2*i + 2
 	if j1 < n {
 		if pq.less(j1, i) {
-			t.Errorf("heap invariant invalidated [%d] = %d > [%d] = %d", i, pq.queue[i], j1, pq.queue[j1])
+			t.Errorf("heap invariant invalidated [%d] = %v > [%d] = %v", i, pq.queue[i], j1, pq.queue[j1])
 			return
 		}
 		verify(t, j1, pq)
 	}
 	if j2 < n {
 		if pq.less(j2, i) {
-			t.Errorf("heap invariant invalidated [%d] = %d > [%d] = %d", i, pq.queue[i], j1, pq.queue[j2])
+			t.Errorf("heap invariant invalidated [%d] = %v > [%d] = %v", i, pq.queue[i], j1, pq.queue[j2])
 			return
 		}
 		verify(t, j2, pq)
@@ -43,6 +43,37 @@ func TestInit0(t *testing.T) {
 			t.Errorf("%d.th pop got %d; want %d", i, x, 0)
 		}
 	}
+}
+
+func TestInit0Int(t *testing.T) {
+	testinit[int](t)
+	testinit[int32](t)
+	testinit[int64](t)
+	testinit[int8](t)
+}
+
+func testinit[T Number](t *testing.T) {
+	t.Helper()
+	pq := NewPQNumber[T]()
+	for i := 20; i > 0; i-- {
+		pq.Push(T(0)) // all elements are the same
+	}
+	pq.init()
+	verify(t, 0, pq)
+
+	for i := 1; pq.Len() > 0; i++ {
+		x := pq.Pop()
+		verify(t, 0, pq)
+		if x != T(0) {
+			t.Errorf("%d.th pop got %v; want %d", i, x, 0)
+		}
+	}
+
+}
+
+func TestInit0IFloat(t *testing.T) {
+	testinit[float32](t)
+	testinit[float64](t)
 }
 
 func TestInit1(t *testing.T) {
@@ -182,7 +213,7 @@ func TestFix(t *testing.T) {
 		} else {
 			pq.queue[elem] /= 2
 		}
-		pq.Fix( elem)
-		verify(t, 0,pq)
+		pq.Fix(elem)
+		verify(t, 0, pq)
 	}
 }

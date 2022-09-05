@@ -1,6 +1,10 @@
 package heapq
 
-import "fmt"
+import (
+	"fmt"
+
+	"golang.org/x/exp/constraints"
+)
 
 type PQ[T any] struct {
 	queue []T
@@ -50,6 +54,56 @@ func NewPQWithItems[T any](items []T, less func(x, y T) bool) *PQ[T] {
 	pq.init()
 	return pq
 
+}
+
+type Number interface {
+	int|int32|int64|int8|float32|float64
+}
+
+func NewPQNumber[T Number]() *PQ[T] {
+	pq := &PQ[T] {
+		queue: make([]T, 0),
+		Less: func(x,y T) bool {
+			return x < y
+		},
+	}
+
+	return pq
+}
+
+
+func NewPQOrdered[T constraints.Ordered]() *PQ[T] {
+	pq := &PQ[T]{
+		queue: make([]T, 0),
+		Less: func(x, y T) bool {
+			switch any(x).(type) {
+			case int:
+
+				return any(x).(int) < any(y).(int)
+			case int8:
+				return any(x).(int8) < any(y).(int8)
+			case int16:
+				return any(x).(int16) < any(y).(int16)
+			case int32:
+				return any(x).(int32) < any(y).(int32)
+			case int64:
+				return any(x).(int32) < any(y).(int32)
+			case float32:
+				return any(x).(float32) < any(y).(float32)
+			case float64:
+				return any(x).(float64) < any(y).(float64)
+	
+			
+			
+
+			default:
+				return false
+
+			}
+		},
+	}
+
+	return pq
 }
 
 func (pq *PQ[T]) less(i, j int) bool {
