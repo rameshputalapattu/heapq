@@ -69,6 +69,19 @@ func NewPQNumber[T Number]() *PQ[T] {
 	return pq
 }
 
+func NewPQWithNumbers[T Number](items []T) *PQ[T] {
+	pq := &PQ[T]{
+		queue: items,
+		Less: func(x, y T) bool {
+			return x < y
+		},
+	}
+
+	pq.init()
+	return pq
+
+}
+
 func (pq *PQ[T]) less(i, j int) bool {
 	return pq.Less(pq.queue[i], pq.queue[j])
 }
