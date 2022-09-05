@@ -217,3 +217,50 @@ func TestFix(t *testing.T) {
 		verify(t, 0, pq)
 	}
 }
+
+func TestPQWithNumberItems(t *testing.T) {
+	var items []int
+	for i := 20; i > 0; i-- {
+		items = append(items, i)
+	}
+	pq := NewPQWithNumbers(items)
+
+	pq.init()
+	verify(t, 0, pq)
+
+	for i := 1; pq.Len() > 0; i++ {
+		x := pq.Pop()
+		verify(t, 0, pq)
+		if x != i {
+			t.Errorf("%d.th pop got %d; want %d", i, x, i)
+		}
+	}
+}
+
+func TestPQWithItems(t *testing.T) {
+	var items []int
+	for i := 20; i > 0; i-- {
+		items = append(items, i)
+	}
+	pq := NewPQWithItems(items, func(x, y int) bool {
+		return x < y
+	},
+	)
+
+	pq.init()
+	verify(t, 0, pq)
+
+	for i := 1; pq.Len() > 0; i++ {
+		x := pq.Pop()
+		verify(t, 0, pq)
+		if x != i {
+			t.Errorf("%d.th pop got %d; want %d", i, x, i)
+		}
+	}
+}
+
+func TestPrint(t *testing.T) {
+	pq := NewPQWithNumbers([]int{0,1,3,2,5,4})
+
+	pq.PrintAll()
+}
